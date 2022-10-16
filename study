@@ -1,0 +1,25 @@
+#!/bin/bash
+
+gpt3 "Generate five study questions and answers for the following:
+
+$(cat file.txt)
+
+example format:
+Questions	| Answers
+" > qa.txt
+
+for ((i=1;i<=$(cat qa.txt | grep "|" | wc -l);i++))
+do
+	in=$(cat qa.txt | grep "|" | sed -n "$i"p)
+	question="$(echo $in | grep -o "^[^|]*")"
+	answer="$(echo $in | grep -o "[^|]*$")"
+	echo $question
+	read line
+	grade=$(gpt3 "Grade the following answer as CORRECT, CLOSE, or INCORRECT if the correct answer is \"$answer\"
+
+	$line
+
+	" )
+
+	echo Your grade is $grade, and the correct answer was \"$answer\"
+done
